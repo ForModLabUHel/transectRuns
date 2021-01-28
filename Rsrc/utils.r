@@ -1,15 +1,96 @@
-makePlot <- function(run,varX,siteX){
-  nSp <- run$maxNlayers
-  if(nSp==1){
-    plot(run$multiOut[siteX,,varX,1,1],type='l',
-         main=paste("site",siteX),ylab = varNames[varX])
-  } else{
-    ylimX=range(run$multiOut[siteX,,varX,,1],na.rm=T)
-    plot(run$multiOut[siteX,,varX,1,1],type='l',ylim = ylimX,
-         main=paste("site",siteX),ylab = varNames[varX])
-    lines(run$multiOut[siteX,,varX,2,1],col=2)
-    lines(run$multiOut[siteX,,varX,3,1],col=3)
-    legend("right",c("pi","sp","bir"),col=1:3,lty=1,bg="transparent")
+fAparPlot <- function(out,siteX){
+  fapars <- data.table(value=c(out$fAPAR[siteX,],out$GVout[siteX,,1],
+                               out$fAPAR[siteX,]+out$GVout[siteX,,1]),
+                       year=1:length(out$fAPAR[siteX,]),
+                       fAPAR=c(rep(c("stand","gv","tot"),each=length(out$fAPAR[siteX,]))))
+  
+  pX <- ggplot(fapars,mapping = aes(x=year,y=value,col=fAPAR))+
+    geom_line()
+}
+
+
+litterPlot <- function(out,siteX){
+  nwlittot <- apply(out$multiOut[siteX,,26:27,,1],1,sum)
+  gvlit <- out$GVout[siteX,,2]
+  nwlit <- nwlittot - out$GVout[siteX,,2]
+  
+  lit <- data.table(value=c(nwlit,gvlit,nwlittot),
+                    year=1:length(nwlit),
+                    litter=c(rep(c("stand","gv","tot"),
+                                 each=length(nwlit))))
+  
+  pX <- ggplot(lit,mapping = aes(x=year,y=value,col=litter))+
+    geom_line()
+}
+
+
+photoPlot <- function(out,siteX){
+  if(length(dim(out$multiOut[siteX,,44,,1]))>0){
+    stand <- apply(out$multiOut[siteX,,44,,1],1,sum)
+  }else{
+    stand <- out$multiOut[siteX,,44,,1]
+  }
+  gv <- out$GVout[siteX,,3]
+  tot <- stand + gv
+  
+  tab <- data.table(value=c(stand,gv,tot),
+                    year=1:length(stand),
+                    vegX=c(rep(c("stand","gv","tot"),
+                               each=length(stand))))
+  
+  pX <- ggplot(tab,mapping = aes(x=year,y=value,col=vegX))+
+    geom_line()
+}
+
+resPlot <- function(out,siteX){
+  if(length(dim(out$multiOut[siteX,,9,,1]))>0){
+    stand <- apply(out$multiOut[siteX,,9,,1],1,sum)
+  }else{
+    stand <- out$multiOut[siteX,,9,,1]
+  }
+  gv <- out$GVout[siteX,,3] *0.5
+  tot <- stand + gv
+  
+  tab <- data.table(value=c(stand,gv,tot),
+                    year=1:length(stand),
+                    vegX=c(rep(c("stand","gv","tot"),
+                               each=length(stand))))
+  
+  pX <- ggplot(tab,mapping = aes(x=year,y=value,col=vegX))+
+    geom_line()
+}
+neePlot <- function(out_gv,out_ngv,siteX){
+  if(length(dim(out_gv$multiOut[siteX,,46,,1]))>0){
+    nee_gv <- apply(out_gv$multiOut[siteX,,46,,1],1,sum)
+  }else{
+    nee_gv <- out_gv$multiOut[siteX,,46,,1]
+  }
+  if(length(dim(out_ngv$multiOut[siteX,,46,,1]))>0){
+    nee_ngv <- apply(out_ngv$multiOut[siteX,,46,,1],1,sum)
+  }else{
+    nee_ngv <- out_ngv$multiOut[siteX,,46,,1]
   }
   
+  tab <- data.table(value=c(nee_gv,nee_ngv),
+                    year=1:length(nee_gv),
+                    vegX=c(rep(c("nee_gv","nee_ngv"),
+                               each=length(nee_gv))))
+  
+  pX <- ggplot(tab,mapping = aes(x=year,y=value,col=vegX))+
+    geom_line()
+}
+
+makePlotXage <- function(out,varX,siteX){
+  nLay <- dim(out$multiOut)[4]
+  layers <- paste0("layer",1:nLay)
+  yrange <- range(out$multiOut[siteX,,varX,,1])
+  plot(out$multiOut[siteX,,7,1,1],out$multiOut[siteX,,varX,1,1],type='l', col=1,ylab='',main=varNames[varX],ylim=yrange,xlab="age")
+  if(nLay>1) for(i in 2:nLay) lines(out$multiOut[siteX,,7,i,1],out$multiOut[siteX,,varX,i,1],col=i)
+}
+makePlot <- function(out,varX,siteX){
+  nLay <- dim(out$multiOut)[4]
+  layers <- paste0("layer",1:nLay)
+  yrange <- range(out$multiOut[siteX,,varX,,1])
+  plot(out$multiOut[siteX,,varX,1,1],type='l', col=1,ylab='',main=varNames[varX],ylim=yrange)
+  if(nLay>1) for(i in 2:nLay) lines(out$multiOut[siteX,,varX,i,1],col=i)
 }

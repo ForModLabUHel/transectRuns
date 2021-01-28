@@ -1,8 +1,5 @@
-# library(devtools)
-# install_github("ForModLabUHel/Rprebasso@v0.1")  ###install old version (climate panel version)
 source("Rsrc/settings.r")
-library(Rprebasso)
-# load("inputs/resDE_n4_pMAP.rdata")
+
 nSites <- 7
 siteInfo <- matrix(c(NA,NA,3,160,0,0,20,3,3,413,0.45,0.118),nSites,12,byrow = T)
 

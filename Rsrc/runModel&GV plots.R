@@ -1,42 +1,19 @@
-library(ggplot2)
-library(ggpubr)
-library(Rprebasso) 
-setwd("~/research/PREBAS/Rprebas_examples/transectRun")
-source("utils.r")
-nSites=7
+source("Rsrc/settings.r")
+# setwd("~/research/PREBAS/Rprebas_examples/transectRun")
+source("Rsrc/utils.r")
 # source("procData.r")
 load("inputs/initPreas.rdata")
-# initPrebasAll$pCROBAS[17,] <- 2000
-# initPrebasSp$pCROBAS[17,] <- 2000
-# initPrebasP$pCROBAS[17,] <- 2000
 
-# initPrebasAll$pPRELES[5] <- 0.95
-# initPrebasSp$pPRELES[5] <- 0.95
-# initPrebasP$pPRELES[5] <- 0.95
-# initPrebasAll$pCROBAS <- pCROB
-###change parameters
-# pars <- read.csv("inputs/parameters.csv",header=T)
-# initPrebasAll$pCROBAS <- initPrebasP$pCROBAS <- initPrebasSp$pCROBAS <- as.matrix(pars[,2:4])
+nSites=initPrebasAll$nSites
 
-# pX <- pCROB; pX[12,] <- pX[12,] -1
-# pX[c(5,6,8,9),2] <- c(9.7,2.5,0.202,0.337)
-# 
-# # #####old parameters for new version
-# pX <- pCROB; pX[12,] <- pCROB[12,]-1
-# pX[31,] <- 0.
-# pX[c(8,9),1] <- c(0.4,0.5)
-# pX[c(8,9),2] <- c(0.4,0.5)
-# pX[c(8,9),3] <- c(0.4,0.5)
-# pX[21,1] <- c(0.4) #alfar1 pine
-# pX[22,1] <- c(0.44) #alfar2 pine
-# alfar3                      0.47000000  3.800000e-01    0.64000000
-# alfar4                      0.64000000  4.800000e-01    0.75000000
-# alfar5                      0.84000000  5.800000e-01    0.94000000
-# #####old parameters for new version END
-
-# initPrebasAll$pCROBAS <- initPrebasP$pCROBAS <- initPrebasSp$pCROBAS <- pX
+###Create lists for outputs
 prebRuns <- soilC <- list()
-# change site type
+
+
+
+# change site type in loop
+# GVrun=1
+
 for(siteType in 1:5){
   # siteType = 3
   initPrebasP$siteInfo[,3] <- initPrebasSp$siteInfo[,3] <- initPrebasAll$siteInfo[,3] <- siteType 
@@ -69,6 +46,7 @@ for(siteType in 1:5){
   print(siteType)
 }
 
+# GVrun=0
 for(siteType in 1:5){
   # siteType = 3
   initPrebasP$siteInfo[,3] <- initPrebasSp$siteInfo[,3] <- initPrebasAll$siteInfo[,3] <- siteType 
@@ -98,102 +76,6 @@ for(siteType in 1:5){
   # plot(prebRuns$all[[siteType]]$soilCtot[siteX,])
   # abline(h=sum(soilC$all[[siteType]][siteX,,,]))
   print(siteType)
-}
-fAparPlot <- function(out,siteX){
-  fapars <- data.table(value=c(out$fAPAR[siteX,],out$GVout[siteX,,1],
-                  out$fAPAR[siteX,]+out$GVout[siteX,,1]),
-                  year=1:length(out$fAPAR[siteX,]),
-              fAPAR=c(rep(c("stand","gv","tot"),each=length(out$fAPAR[siteX,]))))
-  
-  pX <- ggplot(fapars,mapping = aes(x=year,y=value,col=fAPAR))+
-    geom_line()
-}
-
-
-litterPlot <- function(out,siteX){
-  nwlittot <- apply(out$multiOut[siteX,,26:27,,1],1,sum)
-  gvlit <- out$GVout[siteX,,2]
-  nwlit <- nwlittot - out$GVout[siteX,,2]
-  
-  lit <- data.table(value=c(nwlit,gvlit,nwlittot),
-                       year=1:length(nwlit),
-                       litter=c(rep(c("stand","gv","tot"),
-                                    each=length(nwlit))))
-  
-  pX <- ggplot(lit,mapping = aes(x=year,y=value,col=litter))+
-    geom_line()
-}
-
-
-photoPlot <- function(out,siteX){
-  if(length(dim(out$multiOut[siteX,,44,,1]))>0){
-    stand <- apply(out$multiOut[siteX,,44,,1],1,sum)
-  }else{
-    stand <- out$multiOut[siteX,,44,,1]
-  }
-  gv <- out$GVout[siteX,,3]
-  tot <- stand + gv
-  
-  tab <- data.table(value=c(stand,gv,tot),
-                    year=1:length(stand),
-                    vegX=c(rep(c("stand","gv","tot"),
-                                 each=length(stand))))
-  
-  pX <- ggplot(tab,mapping = aes(x=year,y=value,col=vegX))+
-    geom_line()
-}
-
-resPlot <- function(out,siteX){
-  if(length(dim(out$multiOut[siteX,,9,,1]))>0){
-    stand <- apply(out$multiOut[siteX,,9,,1],1,sum)
-  }else{
-    stand <- out$multiOut[siteX,,9,,1]
-  }
-  gv <- out$GVout[siteX,,3] *0.5
-  tot <- stand + gv
-  
-  tab <- data.table(value=c(stand,gv,tot),
-                    year=1:length(stand),
-                    vegX=c(rep(c("stand","gv","tot"),
-                               each=length(stand))))
-  
-  pX <- ggplot(tab,mapping = aes(x=year,y=value,col=vegX))+
-    geom_line()
-}
-neePlot <- function(out_gv,out_ngv,siteX){
-  if(length(dim(out_gv$multiOut[siteX,,46,,1]))>0){
-    nee_gv <- apply(out_gv$multiOut[siteX,,46,,1],1,sum)
-  }else{
-    nee_gv <- out_gv$multiOut[siteX,,46,,1]
-  }
-  if(length(dim(out_ngv$multiOut[siteX,,46,,1]))>0){
-    nee_ngv <- apply(out_ngv$multiOut[siteX,,46,,1],1,sum)
-  }else{
-    nee_ngv <- out_ngv$multiOut[siteX,,46,,1]
-  }
-
-  tab <- data.table(value=c(nee_gv,nee_ngv),
-                    year=1:length(nee_gv),
-                    vegX=c(rep(c("nee_gv","nee_ngv"),
-                               each=length(nee_gv))))
-  
-  pX <- ggplot(tab,mapping = aes(x=year,y=value,col=vegX))+
-    geom_line()
-}
-
-makePlotXage <- function(out,varX,siteX){
-  nLay <- dim(out$multiOut)[4]
-  layers <- paste0("layer",1:nLay)
-  yrange <- range(out$multiOut[siteX,,varX,,1])
-  plot(out$multiOut[siteX,,7,1,1],out$multiOut[siteX,,varX,1,1],type='l', col=1,ylab='',main=varNames[varX],ylim=yrange,xlab="age")
-  if(nLay>1) for(i in 2:nLay) lines(out$multiOut[siteX,,7,i,1],out$multiOut[siteX,,varX,i,1],col=i)
-}
-makePlot <- function(out,varX,siteX){
-  nLay <- dim(out$multiOut)[4]
-  layers <- paste0("layer",1:nLay)
-  yrange <- range(out$multiOut[siteX,,varX,,1])
-  plot(out$multiOut[siteX,,varX,1,1],type='l', col=1,ylab='',main=varNames[varX],ylim=yrange)
-  if(nLay>1) for(i in 2:nLay) lines(out$multiOut[siteX,,varX,i,1],col=i)
 }
 
 siteX=5
