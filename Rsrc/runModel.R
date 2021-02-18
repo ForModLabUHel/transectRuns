@@ -39,10 +39,24 @@ for(siteType in 1:5){
 }
 
 
-siteX=5
+siteX=1
 varX=11
 siteType <- 3
-makePlot(prebRuns$all[[siteType]],varX,siteX)  
+modOut <- prebRuns$all_GV[[siteType]] 
+
+makePlot(modOut,varX,siteX)  
+# plot stad charactheritsics
+par(mfrow=c(2,2))
+varXs <- c(11,17,13,30)
+yieldVars <- c(2,3,4,6)
+source("Rsrc/compute.pine.growth.by.VV.R")
+for(i in 1:length(varXs)){
+  varX <- varXs[i]
+  ylim=max(c(modOut$multiOut[siteX,,varX,1,1],
+             VV.growth[,yieldVars[i]] ))
+  makePlotXage(modOut,varX,siteX,yrange = c(0,ylim))  
+  lines(VV.growth[,1],VV.growth[,yieldVars[i]],col=2)
+}
 
 
 

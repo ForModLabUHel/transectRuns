@@ -1,6 +1,6 @@
 #=========================================================================
 # Computing the temporal development of stand characteristics in Scots 
-# pine with the models by Vuokila & Väliaho (1980).
+# pine with the models by Vuokila & V?liaho (1980).
 ## The initial state is defined by bonity class, biological age, dominant
 # height, number of stems and basal area with bark. Note that in order
 # for the models to give reasonable predictions, the INITIAL AGE SHOULD
@@ -17,16 +17,16 @@
 # Unaffected by thinnings, the temporal development of dominant height
 # is computed in three alternative ways:
 #
-# (i) predicted with the models by Vuokila & Väliaho, starting from the
+# (i) predicted with the models by Vuokila & V?liaho, starting from the
 # initial values of age and dominant height that are set in this script
 #
 # (ii) taken as the mean curve of the bonity class, according to the models
-# by Vuokila & Väliaho
+# by Vuokila & V?liaho
 #
 # (iii) taken from a PipeQual simulation, carried out so that it produces
 # the initial state used in this script at the chosen initial age employed
 # in this script (the PipeQual simulation typically starts earlier than
-# is possible with these models by Vuokila & Väliaho).
+# is possible with these models by Vuokila & V?liaho).
 #
 # The models for sawtimber and waste percentages of stem volume
 # (Sperc.pine.f and Wperc.pine.f) do not work properly, particularly
@@ -48,18 +48,19 @@
 #==========================================================================
 # SET: Selection of the source of the temporal development of dominant height
 #----------------------------------------------------------------------------
-# "VV" : dominant height model by Vuokila & Väliaho
+# "VV" : dominant height model by Vuokila & V?liaho
 # "bonity" : mean dominant height curve of the bonity class
 # "PipeQual": dominant height curve from PipeQual simulation
 
 #Hsource <- "PipeQual"
 #Hsource <- "bonity"
 Hsource <- "VV"
+#modOut is PREBAS output #!!PREBAS
 
 # If Htype <- "PipeQual", give the PipeQual output file where the temporal
 # development of dominant height is found
 
-#datafile <- "C:/HY-data/AMAKELA/MyDocuments/Research/USER/VisualStudio/GrowthVsVuokilaValiaho/R/OUT/Nynäs3_2/sta.out"
+#datafile <- "C:/HY-data/AMAKELA/MyDocuments/Research/USER/VisualStudio/GrowthVsVuokilaValiaho/R/OUT/Nyn?s3_2/sta.out"
 #datafile <-"C:/HY-data/AMAKELA/MyDocuments/Research/USER/Visual Studio/Nitrogen/nitrogen/nitrogen/sta.out"
 
 # SET: Settings of the bonity class, initial state of the stand, thinnings and
@@ -83,36 +84,52 @@ H101 <- 27
 #..............
 # Biological age (a)
 T0 <- 15
+#!!PREBAS
+indX <- which(modOut$multiOut[siteX,,7,1,1]==T0)[1]
+
 
 # Dominant height (m); if the mean bonity curve or PipeQual simulation is used
 # for the temporal development of dominant height (i.e., Hsource <- "bonity" or
 # (Hsource <- "PipeQual"), set H0 <- NULL
 
-H0 <- 5.7
+#!!PREBAS
+H0 <- modOut$multiOut[siteX,indX,11,1,1]
+# H0 <- 5.7
 #H0 <- NULL
 
 # Number of stems (/ha)
-N0 <- 2000
+# N0 <- 2000
+#!!PREBAS
+N0 <- modOut$multiOut[siteX,indX,17,1,1]
+
 
 # Basal area at breast height WITH BARK (m2/ha)
-G0 <- 9.1
+# G0 <- 9.1
+#!!PREBAS
+G0 <- modOut$multiOut[siteX,indX,13,1,1]
 
 # Rotation length and thinnings
 #...............................
 # Rotation length (biological age in the end of the rotation, a) 
 #Tn <- 80
-Tn <- 110
+# Tn <- 110
+#!!PREBAS
+Tn <- modOut$inAclct[siteX,1]
+indX2 <- 62
 
 # Number and timing of thinnings (in years of age); if no thinnings are
 # performed, set thin.n <- 0 and thin.times <- NULL
-thin.n <- 3
+thin.n <- 3 
+#!!PREBAS
+thin.n <- 2#
 #thin.n <- 0
 #thin.times <- c(40, 55, 70)
 #thin.times <- NULL
 #thin.times <- c(25, 35, 45, 65)
 #thin.times <- c(30, 40, 50, 60, 70)
 #thin.times <- c(35, 45, 60)
-thin.times <- c(50, 65, 85)
+#!!PREBAS
+thin.times <- c(35, 50)
 #thin.times <- c(35, 50, 65)
 #thin.times <- c(30, 40, 55)
 #thin.times <- c(35, 55)
@@ -132,12 +149,13 @@ thin.times <- c(50, 65, 85)
 #thin.ints <- c(0.15, 0.15, 0.15, 0.15, 0.15)
 #thin.ints <- c(0.35, 0.35, 0.35)
 #thin.ints <- c(0.35, 0.35)
-thin.ints <- c(0.30, 0.30, 0.30)
-#thin.ints <- c(0.30, 0.30, 0.30, 0.30, 0.30)
+# thin.ints <- 1-(modOut$multiOut[siteX,thin.times-(modOut$multiOut[siteX,1,7,1,1]-1),13,1,2] /
+#   modOut$multiOut[siteX,thin.times-(modOut$multiOut[siteX,1,7,1,1]-1),13,1,1]  )
+thin.ints <- c(0.40, 0.30)
 #thin.ints <- c(0.30, 0.30, 0.30, 0.30)
 #thin.ints <- c(0.20, 0.20, 0.20, 0.20)
 
-# Models by Vuokila & Väliaho
+# Models by Vuokila & V?liaho
 #----------------------------
 # "Mean annual increment percentage of dominant height during
 # the future 5-year period" (unit %; H = dominant height, m;
@@ -257,7 +275,7 @@ T <- sort( c( seq(from = T0, to = Tn, by = 5), thin.times) )}
 # Computing the temporal development of dominant height (not affected by thinnings)
 #----------------------------------------------------------------------------------
 
-# As predicted with the models by Vuokila & Väliaho
+# As predicted with the models by Vuokila & V?liaho
 #..................................................
 
 if (Hsource == "VV") {   
@@ -417,7 +435,7 @@ else FF[1] <- max(0, V[1] * ( 100 - Sperc.pine.f(V = V[1], N = N0, T = T[1]) -
 # negative values of S and FF are just forced to zero.
 
 
-# Computing the stand development with the models by Vuokila & Väliaho
+# Computing the stand development with the models by Vuokila & V?liaho
 
 #---------------------------------------------------------------------
 
