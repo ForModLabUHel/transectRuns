@@ -7,12 +7,17 @@ library(rgeos)
 library(ggplot2)
 library(ggpubr)
 library(devtools)
-library(plyr)
-library(abind)
+library(plyr)# added (not loaded due to dependency removal)
+library(abind)# added (not loaded due to dependency removal)
 
 multiLayer=TRUE
 
 vPREBAS <- "master"   #### choose PREBAS verson to run the model  "master" , "v0.2.x"
 devtools::install_github("ForModLabUHel/Rprebasso", ref=vPREBAS)
+
+# create plots directory if that doesn't exist
+if(!dir.exists(paste0(getwd(), "/plots"))) {
+  dir.create(paste0(getwd(), "/plots"), recursive = TRUE)
+}
 
 library(Rprebasso) 
