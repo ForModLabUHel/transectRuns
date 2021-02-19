@@ -43,6 +43,13 @@ siteX=1
 varX=11
 siteType <- 3
 modOut <- prebRuns$all_GV[[siteType]] 
+test <- monthlyFluxes(modOut)
+annualGPPsiteX <- apply(modOut$multiOut[siteX,,44,,1],1,sum) + modOut$GVout[siteX,,3]
+plot(test$mGPP[siteX,1:120],type='l')
+points(((1:120)*12-6),annualGPPsiteX[1:120]/12,pch=20,col=2)
+
+dimnames(modOut$multiOut)
+
 
 makePlot(modOut,varX,siteX)  
 # plot stad charactheritsics
