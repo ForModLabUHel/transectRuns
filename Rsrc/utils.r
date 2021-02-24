@@ -9,14 +9,14 @@ fAparPlot <- function(out,siteX){
 }
 
 
-litterPlot <- function(out,siteX){
-  nwlittot <- apply(out$multiOut[siteX,,26:27,,1],1,sum)
-  gvlit <- out$GVout[siteX,,2]
-  nwlit <- nwlittot - out$GVout[siteX,,2]
+nwLitPlot <- function(out,siteX){
+  nwlit_trees <- apply(out$multiOut[siteX,,26:27,,1],1,sum)
+  nwlit_gv <- out$GVout[siteX,,2]
+  nwlit <- nwlit_gv + nwlit_trees
   
-  lit <- data.table(value=c(nwlit,gvlit,nwlittot),
+  lit <- data.table(value=c(nwlit_trees,nwlit_gv,nwlit),
                     year=1:length(nwlit),
-                    litter=c(rep(c("stand","gv","tot"),
+                    litter=c(rep(c("trees","gv","tot"),
                                  each=length(nwlit))))
   
   pX <- ggplot(lit,mapping = aes(x=year,y=value,col=litter))+
