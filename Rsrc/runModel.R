@@ -43,10 +43,21 @@ siteX=1
 varX=11
 siteType <- 3
 modOut <- prebRuns$all_GV[[siteType]] 
-test <- monthlyFluxes(modOut)
+testWeath1 <- monthlyFluxes(modOut,weatherOption = 1)
+testWeath2 <- monthlyFluxes(modOut,weatherOption = 2)
+testWeath3 <- monthlyFluxes(modOut,weatherOption = 3)
+
+siteX=4
+plot(testWeath1$soilC[siteX,])
+points(testWeath2$soilC[siteX,],col=3)
+points(testWeath3$soilC[siteX,],col=4)
+points(seq(1,(150*12),by=12),modOut$soilCtot[siteX,],pch=20,col=2)
+
+
 annualGPPsiteX <- apply(modOut$multiOut[siteX,,44,,1],1,sum) + modOut$GVout[siteX,,3]
 plot(test$mGPP[siteX,1:120],type='l')
 points(((1:120)*12-6),annualGPPsiteX[1:120]/12,pch=20,col=2)
+plot(test$soilC[siteX,1:120],type='l')
 
 dimnames(modOut$multiOut)
 
