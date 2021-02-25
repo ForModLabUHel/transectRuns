@@ -1,3 +1,8 @@
+# ABOUT THIS SCRIPT
+# Loads R-packages/libraries
+# Installs a package from GitHub which contains the PREBAS model
+# Creates a folder for plots exported from R
+
 library(lubridate)
 library(data.table)
 library(sf)
