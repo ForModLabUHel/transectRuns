@@ -39,10 +39,42 @@ for(siteType in 1:5){
 }
 
 
-siteX=5
+siteX=1
 varX=11
 siteType <- 3
-makePlot(prebRuns$all[[siteType]],varX,siteX)  
+modOut <- prebRuns$all_GV[[siteType]] 
+testWeath1 <- monthlyFluxes(modOut,weatherOption = 1)
+testWeath2 <- monthlyFluxes(modOut,weatherOption = 2)
+testWeath3 <- monthlyFluxes(modOut,weatherOption = 3)
+
+siteX=4
+plot(testWeath1$soilC[siteX,])
+points(testWeath2$soilC[siteX,],col=3)
+points(testWeath3$soilC[siteX,],col=4)
+points(seq(1,(150*12),by=12),modOut$soilCtot[siteX,],pch=20,col=2)
+
+
+annualGPPsiteX <- apply(modOut$multiOut[siteX,,44,,1],1,sum) + modOut$GVout[siteX,,3]
+plot(test$mGPP[siteX,1:120],type='l')
+points(((1:120)*12-6),annualGPPsiteX[1:120]/12,pch=20,col=2)
+plot(test$soilC[siteX,1:120],type='l')
+
+dimnames(modOut$multiOut)
+
+
+makePlot(modOut,varX,siteX)  
+# plot stad charactheritsics
+par(mfrow=c(2,2))
+varXs <- c(11,17,13,30)
+yieldVars <- c(2,3,4,6)
+source("Rsrc/compute.pine.growth.by.VV.R")
+for(i in 1:length(varXs)){
+  varX <- varXs[i]
+  ylim=max(c(modOut$multiOut[siteX,,varX,1,1],
+             VV.growth[,yieldVars[i]] ))
+  makePlotXage(modOut,varX,siteX,yrange = c(0,ylim))  
+  lines(VV.growth[,1],VV.growth[,yieldVars[i]],col=2)
+}
 
 
 
@@ -82,9 +114,9 @@ for(i in 1:5){
     p_fAPAR$GV$spruce[[paste0("st",i)]][[paste0("site",siteX)]] <- fAparPlot(prebRuns$spruce_GV[[i]],siteX)
     p_fAPAR$GV$pine[[paste0("st",i)]][[paste0("site",siteX)]] <- fAparPlot(prebRuns$pine_GV[[i]],siteX)
     p_fAPAR$GV$all[[paste0("st",i)]][[paste0("site",siteX)]] <- fAparPlot(prebRuns$all_GV[[i]],siteX)
-    p_Litter$GV$spruce[[paste0("st",i)]][[paste0("site",siteX)]] <- litterPlot(prebRuns$spruce_GV[[i]],siteX)
-    p_Litter$GV$pine[[paste0("st",i)]][[paste0("site",siteX)]] <- litterPlot(prebRuns$pine_GV[[i]],siteX)
-    p_Litter$GV$all[[paste0("st",i)]][[paste0("site",siteX)]] <- litterPlot(prebRuns$all_GV[[i]],siteX)
+    p_Litter$GV$spruce[[paste0("st",i)]][[paste0("site",siteX)]] <- nwLitPlot(prebRuns$spruce_GV[[i]],siteX)
+    p_Litter$GV$pine[[paste0("st",i)]][[paste0("site",siteX)]] <- nwLitPlot(prebRuns$pine_GV[[i]],siteX)
+    p_Litter$GV$all[[paste0("st",i)]][[paste0("site",siteX)]] <- nwLitPlot(prebRuns$all_GV[[i]],siteX)
     
     p_gpp$GV$spruce[[paste0("st",i)]][[paste0("site",siteX)]] <- photoPlot(prebRuns$spruce_GV[[i]],siteX)
     p_gpp$GV$pine[[paste0("st",i)]][[paste0("site",siteX)]] <- photoPlot(prebRuns$pine_GV[[i]],siteX)
@@ -145,8 +177,6 @@ for(ij in 1:7){
   
   print(ij)
 }
-
-
 
 
 extractSoilC <- function(inp){

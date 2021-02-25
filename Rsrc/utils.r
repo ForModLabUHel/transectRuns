@@ -9,14 +9,14 @@ fAparPlot <- function(out,siteX){
 }
 
 
-litterPlot <- function(out,siteX){
-  nwlittot <- apply(out$multiOut[siteX,,26:27,,1],1,sum)
-  gvlit <- out$GVout[siteX,,2]
-  nwlit <- nwlittot - out$GVout[siteX,,2]
+nwLitPlot <- function(out,siteX){
+  nwlit_trees <- apply(out$multiOut[siteX,,26:27,,1],1,sum)
+  nwlit_gv <- out$GVout[siteX,,2]
+  nwlit <- nwlit_gv + nwlit_trees
   
-  lit <- data.table(value=c(nwlit,gvlit,nwlittot),
+  lit <- data.table(value=c(nwlit_trees,nwlit_gv,nwlit),
                     year=1:length(nwlit),
-                    litter=c(rep(c("stand","gv","tot"),
+                    litter=c(rep(c("trees","gv","tot"),
                                  each=length(nwlit))))
   
   pX <- ggplot(lit,mapping = aes(x=year,y=value,col=litter))+
@@ -80,10 +80,10 @@ neePlot <- function(out_gv,out_ngv,siteX){
     geom_line()
 }
 
-makePlotXage <- function(out,varX,siteX){
+makePlotXage <- function(out,varX,siteX,yrange){
   nLay <- dim(out$multiOut)[4]
   layers <- paste0("layer",1:nLay)
-  yrange <- range(out$multiOut[siteX,,varX,,1])
+  # yrange <- range(out$multiOut[siteX,,varX,,1])
   plot(out$multiOut[siteX,,7,1,1],out$multiOut[siteX,,varX,1,1],type='l', col=1,ylab='',main=varNames[varX],ylim=yrange,xlab="age")
   if(nLay>1) for(i in 2:nLay) lines(out$multiOut[siteX,,7,i,1],out$multiOut[siteX,,varX,i,1],col=i)
 }
@@ -94,3 +94,9 @@ makePlot <- function(out,varX,siteX){
   plot(out$multiOut[siteX,,varX,1,1],type='l', col=1,ylab='',main=varNames[varX],ylim=yrange)
   if(nLay>1) for(i in 2:nLay) lines(out$multiOut[siteX,,varX,i,1],col=i)
 }
+
+
+
+# test <- monthlyFluxes(modOut)
+# plot(test$mNEP[1,1:1200],type='l')
+# points(((1:max(modOut$nYears))*12-6),apply(modOut$multiOut[1,,46,,1]/12,1,sum),col=2,pch=20)
