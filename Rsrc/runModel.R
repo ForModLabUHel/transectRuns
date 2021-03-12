@@ -63,7 +63,11 @@ dimnames(modOut$multiOut)
 
 
 makePlot(modOut,varX,siteX)  
-# plot stad charactheritsics
+
+
+
+####Yield table example for Xianglin!
+modOut <- prebRuns$pine_GV[[siteType]] 
 par(mfrow=c(2,2))
 varXs <- c(11,17,13,30)
 yieldVars <- c(2,3,4,6)
@@ -73,7 +77,7 @@ for(i in 1:length(varXs)){
   ylim=max(c(modOut$multiOut[siteX,,varX,1,1],
              VV.growth[,yieldVars[i]] ))
   makePlotXage(modOut,varX,siteX,yrange = c(0,ylim))  
-  lines(VV.growth[,1],VV.growth[,yieldVars[i]],col=2)
+  lines(VV.growth[,1],VV.growth[,yieldVars[i]],col=4)
 }
 
 
