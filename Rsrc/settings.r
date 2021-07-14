@@ -12,8 +12,8 @@ library(rgeos)
 library(ggplot2)
 library(ggpubr)
 library(devtools)
-library(plyr)# added (not loaded due to dependency removal)
-library(abind)# added (not loaded due to dependency removal)
+library(plyr)
+library(abind)
 
 multiLayer=TRUE
 
